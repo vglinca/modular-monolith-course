@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <RootNamespace>Inflow.Modules.Payments.Api</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <None Remove="module.payments.json" />
+        <None Remove="module.payments.development.json" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Inflow.Modules.Payments.Core\Inflow.Modules.Payments.Core.csproj" />
+    </ItemGroup>
+    
+</Project>

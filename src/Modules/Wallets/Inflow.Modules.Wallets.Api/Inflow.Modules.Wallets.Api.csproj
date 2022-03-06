@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <RootNamespace>Inflow.Modules.Wallets.Api</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <None Remove="module.wallets.json" />
+        <None Remove="module.wallets.development.json" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\Shared\Inflow.Shared.Infrastructure\Inflow.Shared.Infrastructure.csproj" />
+      <ProjectReference Include="..\Inflow.Modules.Wallets.Infrastructure\Inflow.Modules.Wallets.Infrastructure.csproj" />
+    </ItemGroup>
+
+</Project>

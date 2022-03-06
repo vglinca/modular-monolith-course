@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Inflow.Modules.Users.Core\Inflow.Modules.Users.Core.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="module.users.json" />
+      <None Remove="module.users.development.json" />
+    </ItemGroup>
+
+</Project>
