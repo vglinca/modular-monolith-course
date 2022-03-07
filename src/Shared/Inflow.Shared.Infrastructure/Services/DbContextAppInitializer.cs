@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,9 +7,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace Inflow.Shared.Infrastructure.Postgres;
+namespace Inflow.Shared.Infrastructure.Services;
 
-internal class DbContextAppInitializer : IHostedService
+public class DbContextAppInitializer : IHostedService
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<DbContextAppInitializer> _logger;
@@ -19,7 +19,7 @@ internal class DbContextAppInitializer : IHostedService
         _serviceProvider = serviceProvider;
         _logger = logger;
     }
-    
+
     public async Task StartAsync(CancellationToken cancellationToken)
     {
         var dbCtxTypes = AppDomain.CurrentDomain.GetAssemblies()
@@ -34,9 +34,23 @@ internal class DbContextAppInitializer : IHostedService
             {
                 continue;
             }
-            
+
             _logger.LogInformation($"Running DbContext for context {dbCtxType.Name}");
             await ctx.Database.MigrateAsync(cancellationToken);
+        }
+
+        var initializers = scope.ServiceProvider.GetServices<IInitializer>();
+        foreach (var initializer in initializers)
+        {
+            try
+            {
+                _logger.LogInformation($"Running the initializer: {initializer.GetType().Name}...");
+                await initializer.InitAsync();
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(exception, exception.Message);
+            }
         }
     }
 

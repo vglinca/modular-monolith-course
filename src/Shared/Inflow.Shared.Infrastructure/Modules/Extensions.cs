@@ -5,7 +5,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace Inflow.Shared.Infrastructure.Modules;
 
-internal static class Extensions
+public static class Extensions
 {
     public static IHostBuilder ConfigureModules(this IHostBuilder builder)
         => builder.ConfigureAppConfiguration((ctx, cfg) =>

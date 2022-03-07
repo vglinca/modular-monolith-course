@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Inflow.Modules.Customers.Api;
 using Inflow.Shared.Abstractions.Modules;
 using Inflow.Shared.Infrastructure;
 using Inflow.Shared.Infrastructure.Modules;
@@ -29,7 +28,7 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddModularInfrastructure(_assemblies, _configuration);
+        services.AddModularInfrastructure(_assemblies, _configuration, _modules);
 
         foreach (var module in _modules)
         {
@@ -39,8 +38,9 @@ public class Startup
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
     {
-        logger.LogInformation($"Modules: {string.Join(",", _modules.Select(m => m.Name))}");
-        app.UseRouting();
+        logger.LogInformation($"Loading modules: {string.Join(",", _modules.Select(m => m.Name))}");
+        
+        app.UseModularInfrastructure();
 
         foreach (var module in _modules)
         {

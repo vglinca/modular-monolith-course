@@ -16,7 +16,7 @@
 
     <ItemGroup>
 <!--      <None Remove="modules.customers.json" />-->
-      <Content Include="modules.customers.json">
+      <Content Include="module.customers.json">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
     </ItemGroup>
