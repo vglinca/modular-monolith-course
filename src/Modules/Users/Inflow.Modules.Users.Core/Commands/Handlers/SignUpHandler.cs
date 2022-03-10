@@ -2,10 +2,13 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Inflow.Modules.Users.Core.Entities;
+using Inflow.Modules.Users.Core.Events;
 using Inflow.Modules.Users.Core.Exceptions;
 using Inflow.Modules.Users.Core.Repositories;
 using Inflow.Shared.Abstractions;
 using Inflow.Shared.Abstractions.Commands;
+using Inflow.Shared.Abstractions.Messaging;
+using Inflow.Shared.Abstractions.Modules;
 using Inflow.Shared.Abstractions.Time;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
@@ -19,16 +22,19 @@ internal sealed class SignUpHandler : ICommandHandler<SignUp>
     private readonly IPasswordHasher<User> _passwordHasher;
     private readonly IClock _clock;
     private readonly RegistrationOptions _registrationOptions;
+    private readonly IMessageBroker _messageBroker;
     private readonly ILogger<SignUpHandler> _logger;
 
     public SignUpHandler(IUserRepository userRepository, IRoleRepository roleRepository, 
-        IPasswordHasher<User> passwordHasher, IClock clock, RegistrationOptions registrationOptions, ILogger<SignUpHandler> logger)
+        IPasswordHasher<User> passwordHasher, IClock clock, RegistrationOptions registrationOptions, 
+        IMessageBroker messageBroker, ILogger<SignUpHandler> logger)
     {
         _userRepository = userRepository;
         _roleRepository = roleRepository;
         _passwordHasher = passwordHasher;
         _clock = clock;
         _registrationOptions = registrationOptions;
+        _messageBroker = messageBroker;
         _logger = logger;
     }
 
@@ -75,6 +81,7 @@ internal sealed class SignUpHandler : ICommandHandler<SignUp>
         };
         
         await _userRepository.AddAsync(user);
+        await _messageBroker.PublishAsync(new UserSignedUp(user.Id, user.Email, user.Email), cancellationToken);
         
         _logger.LogInformation($"User with ID: '{user.Id}' has signed up.");
     }

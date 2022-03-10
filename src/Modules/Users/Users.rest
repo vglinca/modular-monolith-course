@@ -4,7 +4,7 @@
 GET {{url}}
 
 ###
-@email = user1@inflow.io
+@email = user7@inflow.io
 @adminEmail = admin1@inflow.io
 @password = Secret123!
 
@@ -18,7 +18,7 @@ Content-Type: application/json
 }
 
 ### Login as the regular user
-# @name sign_in
+# @name sign-in
 POST {{url}}/account/sign-in
 Content-Type: application/json
 

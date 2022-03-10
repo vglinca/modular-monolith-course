@@ -25,7 +25,7 @@ internal static class Extensions
     private static T Map<T>(this User user) where T : UserDto, new()
         => new()
         {
-            UserId = user.Id,
+            Id = user.Id,
             Email = user.Email,
             State = States[user.State],
             Role = user.Role.Name,

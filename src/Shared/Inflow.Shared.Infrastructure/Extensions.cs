@@ -10,7 +10,11 @@ using Inflow.Shared.Abstractions.Time;
 using Inflow.Shared.Infrastructure.Api;
 using Inflow.Shared.Infrastructure.Auth;
 using Inflow.Shared.Infrastructure.Commands;
+using Inflow.Shared.Infrastructure.Contracts;
 using Inflow.Shared.Infrastructure.Dispatchers;
+using Inflow.Shared.Infrastructure.Events;
+using Inflow.Shared.Infrastructure.Messaging;
+using Inflow.Shared.Infrastructure.Modules;
 using Inflow.Shared.Infrastructure.Postgres;
 using Inflow.Shared.Infrastructure.Queries;
 using Inflow.Shared.Infrastructure.Services;
@@ -48,11 +52,15 @@ public static class Extensions
             .AddSingleton<IRequestStorage, RequestStorage>()
             .AddCommands(assemblies)
             .AddQueries(assemblies)
+            .AddEvents(assemblies)
             .AddAuth(modules)
             .AddSingleton<IDispatcher, InMemoryDispatcher>()
             .AddPostgres()
             .AddSingleton<IClock, UtcClock>()
             .AddHostedService<DbContextAppInitializer>()
+            .AddModuleRequests(assemblies)
+            .AddMessaging()
+            .AddContracts()
             .AddControllers()
             .ConfigureApplicationPartManager(mgr =>
             {
@@ -77,6 +85,21 @@ public static class Extensions
 
     public static IServiceCollection AddInitializer<T>(this IServiceCollection services) where T : class, IInitializer
         => services.AddTransient<IInitializer, T>();
+
+    public static string GetModuleName(this object obj)
+        => obj?.GetType().GetModuleName() ?? string.Empty;
+
+    public static string GetModuleName(this Type type, string namespacePart = "Modules", int splitIndex = 2)
+    {
+        if (type?.Namespace is null)
+        {
+            return string.Empty;
+        }
+
+        return type.Namespace.Contains(namespacePart)
+            ? type.Namespace.Split(".")[splitIndex].ToLowerInvariant()
+            : string.Empty;
+    }
 
     public static TOptions GetOptions<TOptions>(this IServiceCollection services, string section)
         where TOptions : class, new()

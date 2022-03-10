@@ -2,7 +2,7 @@ using Inflow.Shared.Abstractions.Exceptions;
 
 namespace Inflow.Modules.Users.Core.Exceptions;
 
-internal class RoleNotFoundException : InflowException
+internal class RoleNotFoundException : ResourceNotFoundException
 {
     public string Role { get; }
 

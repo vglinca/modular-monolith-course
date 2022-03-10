@@ -1,6 +1,8 @@
 ﻿using System.Runtime.CompilerServices;
 using Inflow.Modules.Customers.Core;
+using Inflow.Modules.Customers.Core.Events.External;
 using Inflow.Shared.Abstractions.Modules;
+using Inflow.Shared.Infrastructure.Contracts;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -18,5 +20,7 @@ internal class CustomersModule : IModule
 
     public void Use(IApplicationBuilder app)
     {
+        app.UseContracts()
+            .Register<UserSignedUpContract>();
     }
 }

@@ -20,7 +20,7 @@ internal class CustomersController : ControllerBase
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<CustomerDetailsDto>> GetById(Guid id)
     {
-        var customer = await _dispatcher.DispatchQueryAsync(new GetCustomer(id));
+        var customer = await _dispatcher.QueryAsync(new GetCustomer(id));
         
         if (customer is null)
         {
@@ -33,7 +33,7 @@ internal class CustomersController : ControllerBase
     [HttpPost]
     public async Task<ActionResult> Create([FromBody] CreateCustomer command)
     {
-        await _dispatcher.DispatchCommandAsync(command);
+        await _dispatcher.SendAsync(command);
         return StatusCode(StatusCodes.Status201Created);
     }
 }

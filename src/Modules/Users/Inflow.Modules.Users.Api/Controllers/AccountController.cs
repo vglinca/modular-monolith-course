@@ -26,15 +26,16 @@ internal class AccountController : BaseController
     [HttpPost("sign-up")]
     public async Task<ActionResult> SignUp(SignUp command)
     {
-        await _dispatcher.DispatchCommandAsync(command);
-        return NoContent();
+        await _dispatcher.SendAsync(command);
+        return StatusCode(StatusCodes.Status201Created);
     }
 
+    [HttpPost("sign-in")]
     public async Task<ActionResult<UserDetailsDto>> SignIn(SignIn command)
     {
-        await _dispatcher.DispatchCommandAsync(command);
+        await _dispatcher.SendAsync(command);
         var jwt = _userRequestStorage.GetToken(command.Id);
-        var user = await _dispatcher.DispatchQueryAsync(new GetUser {UserId = command.Id});
+        var user = await _dispatcher.QueryAsync(new GetUser {UserId = jwt.UserId});
         AddCookie(AccessTokenCookie, jwt.AccessToken);
         return Ok(user);
     }

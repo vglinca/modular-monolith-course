@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using Inflow.Shared.Abstractions.Modules;
 using Inflow.Shared.Infrastructure;
+using Inflow.Shared.Infrastructure.Contracts;
 using Inflow.Shared.Infrastructure.Modules;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -46,6 +47,8 @@ public class Startup
         {
             module.Use(app);
         }
+
+        app.ValidateContracts(_assemblies);
         
         app.UseEndpoints(endpoints =>
         {
