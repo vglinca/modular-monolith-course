@@ -32,11 +32,6 @@ internal sealed class ModuleRegistry : IModuleRegistry
 
     public void AddBroadcastAction(ModuleBroadcastRegistration broadcastRegistration)
     {
-        if (broadcastRegistration.Key is null)
-        {
-            throw new InvalidOperationException("Receiver key cannot be null");
-        }
-        
         if (_broadcastRegistrations.GetType().Namespace is null) 
         {
             throw new InvalidOperationException("Receiver namespace cannot be null");

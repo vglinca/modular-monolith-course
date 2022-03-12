@@ -17,6 +17,7 @@ using Inflow.Shared.Infrastructure.Messaging;
 using Inflow.Shared.Infrastructure.Modules;
 using Inflow.Shared.Infrastructure.Postgres;
 using Inflow.Shared.Infrastructure.Queries;
+using Inflow.Shared.Infrastructure.Serialization;
 using Inflow.Shared.Infrastructure.Services;
 using Inflow.Shared.Infrastructure.Storage;
 using Inflow.Shared.Infrastructure.Time;
@@ -50,6 +51,7 @@ public static class Extensions
         services
             .AddMemoryCache()
             .AddSingleton<IRequestStorage, RequestStorage>()
+            .AddSingleton<IJsonSerializer, SystemTextJsonSerializer>()
             .AddCommands(assemblies)
             .AddQueries(assemblies)
             .AddEvents(assemblies)

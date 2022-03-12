@@ -1,3 +1,5 @@
-﻿namespace Inflow.Shared.Abstractions.Commands;
+﻿using Inflow.Shared.Abstractions.Messaging;
 
-public interface ICommand {}
+namespace Inflow.Shared.Abstractions.Commands;
+
+public interface ICommand : IMessage {}

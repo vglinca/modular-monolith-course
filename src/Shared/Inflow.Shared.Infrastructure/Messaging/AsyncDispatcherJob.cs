@@ -27,6 +27,8 @@ internal sealed class AsyncDispatcherJob : BackgroundService
         {
             try
             {
+                _logger.LogInformation(
+                    $"Publishing en event using async dispatcher: {envelope.Message.GetType().Name}");
                 await _moduleClient.PublishAsync(envelope.Message, stoppingToken);
             }
             catch (Exception e)

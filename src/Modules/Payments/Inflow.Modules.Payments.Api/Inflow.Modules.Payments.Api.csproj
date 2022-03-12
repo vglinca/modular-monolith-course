@@ -4,14 +4,16 @@
         <TargetFramework>net6.0</TargetFramework>
         <RootNamespace>Inflow.Modules.Payments.Api</RootNamespace>
     </PropertyGroup>
-
+    
     <ItemGroup>
-        <None Remove="module.payments.json" />
-        <None Remove="module.payments.development.json" />
+      <ProjectReference Include="..\Inflow.Modules.Payments.Core\Inflow.Modules.Payments.Core.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Inflow.Modules.Payments.Core\Inflow.Modules.Payments.Core.csproj" />
+      <None Remove="module.payments.json" />
+      <Content Include="module.payments.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
     </ItemGroup>
     
 </Project>
