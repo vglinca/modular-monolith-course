@@ -13,7 +13,8 @@ internal static class Extensions
         services.AddSingleton<ICommandDispatcher, InMemoryCommandDispatcher>();
         services.Scan(s =>
             s.FromAssemblies(assemblies).AddClasses(c =>
-                    c.AssignableTo(typeof(ICommandHandler<>)))
+                    c.AssignableTo(typeof(ICommandHandler<>))
+                        .WithoutAttribute<DecoratorAttribute>())
                 .AsImplementedInterfaces()
                 .WithScopedLifetime());
         

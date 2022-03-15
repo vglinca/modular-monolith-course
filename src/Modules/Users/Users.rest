@@ -4,7 +4,7 @@
 GET {{url}}
 
 ###
-@email = user14@inflow.io
+@email = user5@inflow.io
 @adminEmail = admin1@inflow.io
 @password = Secret123!
 

@@ -1,5 +1,5 @@
 @url = http://localhost:5000/customers
-@customerId = b0863a3c-ad16-43f1-b51d-6d8c82808ebc
+@customerId = d7f0780e-05d7-43bd-986e-c803728cfccb
 
 ###
 GET {{url}}
@@ -21,12 +21,12 @@ Content-Type: application/json
 
 {
   "customerId": "{{customerId}}",
-  "name": "user14",
-  "fullName": "John Doe",
-  "address": "Test street 123",
+  "name": "user3",
+  "fullName": "Victor Wu",
+  "address": "Baker street 420",
   "nationality": "PL",
   "identityType": "id_card",
-  "identitySeries": "ABC1234567"
+  "identitySeries": "ABC6756667"
 }
 
 ###

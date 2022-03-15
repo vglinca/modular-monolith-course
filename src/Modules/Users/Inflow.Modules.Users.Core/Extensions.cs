@@ -7,6 +7,7 @@ using Inflow.Modules.Users.Core.Entities;
 using Inflow.Modules.Users.Core.Repositories;
 using Inflow.Modules.Users.Core.Services;
 using Inflow.Shared.Infrastructure;
+using Inflow.Shared.Infrastructure.Messaging.Outbox;
 using Inflow.Shared.Infrastructure.Postgres;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,6 +29,8 @@ internal static class Extensions
             .AddScoped<IUserRepository, UserRepository>()
             .AddScoped<IRoleRepository, RoleRepository>()
             .AddPostgres<UsersDbContext>()
+            .AddOutbox<UsersDbContext>()
+            .AddUnitOfWork<UsersUnitOfWork>()
             .AddInitializer<UsersInitializer>();
     }
 }

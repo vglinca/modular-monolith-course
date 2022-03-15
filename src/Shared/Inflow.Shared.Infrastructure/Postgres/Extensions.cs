@@ -15,6 +15,7 @@ public static class Extensions
     internal static IServiceCollection AddPostgres(this IServiceCollection services)
     {
         var options = services.GetOptions<PostgresOptions>("postgres");
+        services.AddSingleton(new UnitOfWorkRegistry());
         services.AddSingleton(options);
         
         return services;
@@ -28,6 +29,18 @@ public static class Extensions
         return services;
     }
 
+    public static IServiceCollection AddUnitOfWork<T>(this IServiceCollection services) where T : class, IUnitOfWork
+    {
+        services
+            .AddScoped<IUnitOfWork, T>()
+            .AddScoped<T>();
+
+        using var sp = services.BuildServiceProvider();
+        sp.GetRequiredService<UnitOfWorkRegistry>().Register<T>();
+        
+        return services;
+    }
+
     public static Task<PagedResult<T>> PaginateAsync<T>(this IQueryable<T> data, IPagedQuery query,
         CancellationToken cancellationToken = default)
         => data.PaginateAsync(query.Page, query.Results, cancellationToken);
@@ -35,7 +48,7 @@ public static class Extensions
     public static async Task<PagedResult<T>> PaginateAsync<T>(this IQueryable<T> data, int page, int results,
         CancellationToken cancellationToken)
     {
-        if (page < 0)
+        if (page <= 0)
         {
             page = 1;
         }

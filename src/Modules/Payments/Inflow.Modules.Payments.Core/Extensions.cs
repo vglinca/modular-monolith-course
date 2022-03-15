@@ -8,6 +8,7 @@ using Inflow.Modules.Payments.Core.Withdrawals.Domain.Repositories;
 using Inflow.Modules.Payments.Core.Withdrawals.Services;
 using Inflow.Modules.Payments.Infrastructure.Clients;
 using Inflow.Modules.Payments.Infrastructure.Repositories;
+using Inflow.Shared.Infrastructure.Messaging.Outbox;
 using Inflow.Shared.Infrastructure.Postgres;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -27,5 +28,7 @@ internal static class Extensions
             .AddSingleton<ICurrencyResolver, CurrencyResolver>()
             .AddSingleton<IDepositAccountFactory, DepositAccountFactory>()
             .AddSingleton<IWithdrawalMetadataResolver, WithdrawalMetadataResolver>()
-            .AddPostgres<PaymentsDbContext>();
+            .AddPostgres<PaymentsDbContext>()
+            .AddOutbox<PaymentsDbContext>()
+            .AddUnitOfWork<PaymentsUnitOfWork>();
 }

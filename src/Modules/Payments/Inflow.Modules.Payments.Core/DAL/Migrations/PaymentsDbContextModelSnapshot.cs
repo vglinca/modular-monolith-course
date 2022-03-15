@@ -170,6 +170,58 @@ namespace Inflow.Modules.Payments.Core.DAL.Migrations
                     b.ToTable("Customers", "payments");
                 });
 
+            modelBuilder.Entity("Inflow.Shared.Infrastructure.Messaging.Outbox.InboxMessage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("ProcessedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("ReceivedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Inbox", "payments");
+                });
+
+            modelBuilder.Entity("Inflow.Shared.Infrastructure.Messaging.Outbox.OutboxMessage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Data")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("SentAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("TraceId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Type")
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Outbox", "payments");
+                });
+
             modelBuilder.Entity("Inflow.Modules.Payments.Core.Deposits.Domain.Entities.Deposit", b =>
                 {
                     b.HasOne("Inflow.Modules.Payments.Core.Deposits.Domain.Entities.DepositAccount", "Account")

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using Inflow.Shared.Abstractions.Commands;
 using Inflow.Shared.Abstractions.Dispatchers;
 using Inflow.Shared.Abstractions.Modules;
 using Inflow.Shared.Abstractions.Storage;
@@ -10,12 +11,16 @@ using Inflow.Shared.Abstractions.Time;
 using Inflow.Shared.Infrastructure.Api;
 using Inflow.Shared.Infrastructure.Auth;
 using Inflow.Shared.Infrastructure.Commands;
+using Inflow.Shared.Infrastructure.Contexts;
 using Inflow.Shared.Infrastructure.Contracts;
 using Inflow.Shared.Infrastructure.Dispatchers;
 using Inflow.Shared.Infrastructure.Events;
+using Inflow.Shared.Infrastructure.Kernel;
 using Inflow.Shared.Infrastructure.Messaging;
+using Inflow.Shared.Infrastructure.Messaging.Outbox;
 using Inflow.Shared.Infrastructure.Modules;
 using Inflow.Shared.Infrastructure.Postgres;
+using Inflow.Shared.Infrastructure.Postgres.Decorators;
 using Inflow.Shared.Infrastructure.Queries;
 using Inflow.Shared.Infrastructure.Serialization;
 using Inflow.Shared.Infrastructure.Services;
@@ -26,6 +31,8 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Serilog;
 
 namespace Inflow.Shared.Infrastructure;
 
@@ -47,17 +54,25 @@ public static class Extensions
                 disabledModules.Add(key.Split(":")[0]);
             }
         }
-        
+
+        ILogger logger = new LoggerConfiguration()
+            .WriteTo.Console()
+            .CreateLogger();
+
         services
             .AddMemoryCache()
+            .AddSingleton(logger)
             .AddSingleton<IRequestStorage, RequestStorage>()
             .AddSingleton<IJsonSerializer, SystemTextJsonSerializer>()
             .AddCommands(assemblies)
             .AddQueries(assemblies)
             .AddEvents(assemblies)
+            .AddDomainEvents(assemblies)
             .AddAuth(modules)
             .AddSingleton<IDispatcher, InMemoryDispatcher>()
             .AddPostgres()
+            .AddOutbox()
+            .AddContext()
             .AddSingleton<IClock, UtcClock>()
             .AddHostedService<DbContextAppInitializer>()
             .AddModuleRequests(assemblies)
@@ -81,6 +96,8 @@ public static class Extensions
                 
                 mgr.FeatureProviders.Add(new InternalControllerFeatureProvider());
             });
+        
+        services.TryDecorate(typeof(ICommandHandler<>), typeof(TransactionalCommandHandlerDecorator<>));
 
         return services;
     }
@@ -126,6 +143,7 @@ public static class Extensions
         app.UseForwardedHeaders(new ForwardedHeadersOptions() {ForwardedHeaders = ForwardedHeaders.All});
         
         app.UseAuth();
+        app.UseContext();
         app.UseRouting();
         app.UseAuthorization();
 

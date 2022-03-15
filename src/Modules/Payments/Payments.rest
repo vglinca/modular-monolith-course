@@ -1,6 +1,7 @@
 @url = http://localhost:5000
-@depositId = 7ecdc7c9-5754-4325-86d6-2ca533457f1c
-@customerId = b0863a3c-ad16-43f1-b51d-6d8c82808ebc
+@depositId = 48755ba2-eb1c-4f77-b5bd-8802cb53eb36
+@customerId = 5eacf848-e62a-4fa1-9e98-6527f3e91180
+
 @withdrawalIban = PL10105000997603123456789123
 
 

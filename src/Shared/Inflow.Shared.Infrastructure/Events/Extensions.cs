@@ -14,7 +14,8 @@ internal static class Extensions
         services.AddSingleton<IEventDispatcher, EventDispatcher>();
         services.Scan(s =>
             s.FromAssemblies(assemblies).AddClasses(c =>
-                    c.AssignableTo(typeof(IEventHandler<>)))
+                    c.AssignableTo(typeof(IEventHandler<>))
+                        .WithoutAttribute<DecoratorAttribute>())
                 .AsImplementedInterfaces()
                 .WithScopedLifetime());
         
