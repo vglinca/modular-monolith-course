@@ -34,7 +34,7 @@ internal sealed class SignInHandler : ICommandHandler<SignIn>
     public async Task HandleAsync(SignIn command, CancellationToken cancellationToken = default)
     {
         var user = await _userRepository.GetAsync(command.Email)
-            .NotNull(() => throw new InvalidCredentialsException());
+            .IfNullThen(() => throw new InvalidCredentialsException());
 
         if (user.State != UserState.Active)
         {

@@ -6,7 +6,7 @@ namespace Inflow.Modules.Users.Api.Controllers;
 [ApiController]
 [Route("[controller]")]
 [ProducesDefaultContentType]
-internal abstract class BaseController : ControllerBase
+internal abstract class AccountControllerBase : ControllerBase
 {
     protected ActionResult<T> OkOrNotFound<T>(T model)
     {

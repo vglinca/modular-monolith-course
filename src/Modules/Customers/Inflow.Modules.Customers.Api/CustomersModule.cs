@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Inflow.Modules.Customers.Core;
 using Inflow.Modules.Customers.Core.DTO;
 using Inflow.Modules.Customers.Core.Events.External;
@@ -16,6 +17,11 @@ namespace Inflow.Modules.Customers.Api;
 internal class CustomersModule : IModule
 {
     public string Name { get; } = "Customers";
+    
+    public IEnumerable<string> Policies { get; } = new[]
+    {
+        "customers"
+    };
     
     public void Register(IServiceCollection services)
     {

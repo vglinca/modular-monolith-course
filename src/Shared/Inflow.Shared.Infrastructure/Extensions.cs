@@ -15,7 +15,9 @@ using Inflow.Shared.Infrastructure.Contexts;
 using Inflow.Shared.Infrastructure.Contracts;
 using Inflow.Shared.Infrastructure.Dispatchers;
 using Inflow.Shared.Infrastructure.Events;
+using Inflow.Shared.Infrastructure.Exceptions;
 using Inflow.Shared.Infrastructure.Kernel;
+using Inflow.Shared.Infrastructure.Logging;
 using Inflow.Shared.Infrastructure.Messaging;
 using Inflow.Shared.Infrastructure.Messaging.Outbox;
 using Inflow.Shared.Infrastructure.Modules;
@@ -55,13 +57,8 @@ public static class Extensions
             }
         }
 
-        ILogger logger = new LoggerConfiguration()
-            .WriteTo.Console()
-            .CreateLogger();
-
         services
             .AddMemoryCache()
-            .AddSingleton(logger)
             .AddSingleton<IRequestStorage, RequestStorage>()
             .AddSingleton<IJsonSerializer, SystemTextJsonSerializer>()
             .AddCommands(assemblies)
@@ -71,8 +68,10 @@ public static class Extensions
             .AddAuth(modules)
             .AddSingleton<IDispatcher, InMemoryDispatcher>()
             .AddPostgres()
+            .AddLoggingDecorators()
             .AddOutbox()
             .AddContext()
+            .AddErrorHandling()
             .AddSingleton<IClock, UtcClock>()
             .AddHostedService<DbContextAppInitializer>()
             .AddModuleRequests(assemblies)
@@ -141,9 +140,11 @@ public static class Extensions
     public static IApplicationBuilder UseModularInfrastructure(this IApplicationBuilder app)
     {
         app.UseForwardedHeaders(new ForwardedHeadersOptions() {ForwardedHeaders = ForwardedHeaders.All});
-        
+
+        app.UseErrorHandling();
         app.UseAuth();
         app.UseContext();
+        app.UseLogging();
         app.UseRouting();
         app.UseAuthorization();
 

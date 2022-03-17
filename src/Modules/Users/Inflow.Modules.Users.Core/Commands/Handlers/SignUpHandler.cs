@@ -66,7 +66,7 @@ internal sealed class SignUpHandler : ICommandHandler<SignUp>
         
         var roleName = string.IsNullOrWhiteSpace(command.Role) ? Role.Default : command.Role.ToLowerInvariant();
         var role = await _roleRepository.GetAsync(roleName)
-            .NotNull(() => new RoleNotFoundException(roleName));
+            .IfNullThen(() => new RoleNotFoundException(roleName));
         
         var now = _clock.CurrentDate();
         var password = _passwordHasher.HashPassword(default, command.Password);

@@ -4,7 +4,7 @@
 GET {{url}}
 
 ###
-@email = user5@inflow.io
+@email = user7@inflow.io
 @adminEmail = admin1@inflow.io
 @password = Secret123!
 
@@ -84,4 +84,14 @@ Content-Type: application/json
 
 {
   "state": "active"
+}
+
+
+### Login as the admin user
+# @name sign_out
+DELETE {{url}}/account/sign-out
+Set-Cookie: {{authCookie}}
+Content-Type: application/json
+
+{
 }

@@ -5,7 +5,7 @@ namespace Inflow.Shared.Abstractions;
 
 public static class Extensions
 {
-    public static async Task<T> NotNull<T>(this Task<T> task, Func<Exception> exception = null)
+    public static async Task<T> IfNullThen<T>(this Task<T> task, Func<Exception> exception = null)
     {
         if (task is null)
         {
