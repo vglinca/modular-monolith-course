@@ -33,6 +33,6 @@ internal sealed class CustomerVerifiedEventHandler : IEventHandler<CustomerVerif
         owner.Verify(_clock.CurrentDate());
         await _ownerRepository.UpdateAsync(owner);
         
-        _logger.LogInformation($"Verified individual owner with ID: '{owner.Id}' based on customer.");
+        _logger.LogInformation("Verified individual owner with ID: '{OwnerId}' based on customer.", owner.Id);
     }
 }

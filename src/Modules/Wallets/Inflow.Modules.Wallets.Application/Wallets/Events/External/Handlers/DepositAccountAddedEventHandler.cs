@@ -33,7 +33,8 @@ internal sealed class DepositAccountAddedEventHandler : IEventHandler<DepositAcc
         await _messageBroker.PublishAsync(new WalletAdded(wallet.Id, wallet.OwnerId, wallet.Currency),
             cancellationToken);
         
-        _logger.LogInformation($"Created a new wallet with ID: '{wallet.Id}', owner ID: '{wallet.OwnerId}', " +
-                               $"currency: '{@event.Currency}' for deposit account with ID: '{@event.AccountId}'.");
+        _logger.LogInformation("Created a new wallet with ID: '{WalletId}', owner ID: '{OwnerId}', " +
+                               "currency: '{Currency}' for deposit account with ID: '{AccountId}'.", 
+            wallet.Id, wallet.OwnerId, @event.Currency, @event.AccountId);
     }
 }

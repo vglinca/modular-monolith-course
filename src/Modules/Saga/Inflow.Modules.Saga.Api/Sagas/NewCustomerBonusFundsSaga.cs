@@ -63,7 +63,6 @@ internal sealed class NewCustomerBonusFundsSaga : Saga<NewCustomerBonusFundsSaga
 
     public async Task HandleAsync(DepositCompleted message, ISagaContext context)
     {
-
         if (Data.DepositCompleted)
         {
             return;
