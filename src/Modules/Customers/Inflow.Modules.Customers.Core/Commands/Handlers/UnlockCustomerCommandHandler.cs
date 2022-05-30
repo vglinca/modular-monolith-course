@@ -25,15 +25,12 @@ internal sealed class UnlockCustomerCommandHandler : ICommandHandler<UnlockCusto
 
     public async Task HandleAsync(UnlockCustomer command, CancellationToken cancellationToken = default)
     {
-        var customer = await _customerRepository.GetAsync(command.CustomerId);
-        if (customer is null)
-        {
-            throw new CustomerNotFoundException(command.CustomerId);
-        }
-            
+        var customer = await _customerRepository.GetAsync(command.CustomerId, cancellationToken);
+
         customer.Unlock(command.Notes);
         await _customerRepository.UpdateAsync(customer);
         await _messageBroker.PublishAsync(new CustomerUnlocked(command.CustomerId), cancellationToken);
-        _logger.LogInformation($"Unlocked a customer with ID: '{command.CustomerId}'.");
+        
+        _logger.LogInformation("Unlocked a customer with ID: '{CustomerId}'.", command.CustomerId);
     }
 }

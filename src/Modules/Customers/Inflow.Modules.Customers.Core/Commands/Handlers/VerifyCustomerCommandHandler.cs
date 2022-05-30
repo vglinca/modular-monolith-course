@@ -29,15 +29,11 @@ internal sealed class VerifyCustomerCommandHandler : ICommandHandler<VerifyCusto
     public async Task HandleAsync(VerifyCustomer command, CancellationToken cancellationToken = default)
     {
         
-        var customer = await _customerRepository.GetAsync(command.CustomerId);
-        if (customer is null)
-        {
-            throw new CustomerNotFoundException(command.CustomerId);
-        }
-        
+        var customer = await _customerRepository.GetAsync(command.CustomerId, cancellationToken);
+
         customer.Verify(_clock.CurrentDate());
         await _customerRepository.UpdateAsync(customer);
         await _messageBroker.PublishAsync(new CustomerVerified(command.CustomerId), cancellationToken);
-        _logger.LogInformation($"Verified a customer with ID: '{command.CustomerId}'.");
+        _logger.LogInformation("Verified a customer with ID: '{CustomerId}'.", command.CustomerId);
     }
 }

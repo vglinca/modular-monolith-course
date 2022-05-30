@@ -4,7 +4,6 @@ using Inflow.Modules.Customers.Core.Domain.Repositories;
 using Inflow.Modules.Customers.Core.Domain.ValueObjects;
 using Inflow.Modules.Customers.Core.Events;
 using Inflow.Modules.Customers.Core.Exceptions;
-using Inflow.Modules.Users.Core.Exceptions;
 using Inflow.Shared.Abstractions.Commands;
 using Inflow.Shared.Abstractions.Messaging;
 using Inflow.Shared.Abstractions.Time;
@@ -31,11 +30,7 @@ internal sealed class CompleteCustomerCommandHandler : ICommandHandler<CompleteC
     public async Task HandleAsync(CompleteCustomer command, CancellationToken cancellationToken = default)
     {
         var customer = await _customerRepository.GetAsync(command.CustomerId);
-        if (customer is null)
-        {
-            throw new CustomerNotFoundException(command.CustomerId);
-        }
-        
+
         if (!string.IsNullOrWhiteSpace(command.Name) && await _customerRepository.ExistsAsync(command.Name))
         {
             throw new CustomerAlreadyExistsException(command.CustomerId);
@@ -47,6 +42,6 @@ internal sealed class CompleteCustomerCommandHandler : ICommandHandler<CompleteC
         await _customerRepository.UpdateAsync(customer);
         await _messageBroker.PublishAsync(new CustomerCompleted(customer.Id, customer.Name, customer.FullName,
             customer.Nationality), cancellationToken);
-        _logger.LogInformation($"Completed a customer with ID: '{command.CustomerId}'.");
+        _logger.LogInformation("Completed a customer with ID: '{CustomerId}'.", command.CustomerId);
     }
 }

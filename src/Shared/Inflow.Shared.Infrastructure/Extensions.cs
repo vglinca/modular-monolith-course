@@ -43,20 +43,6 @@ public static class Extensions
     public static IServiceCollection AddModularInfrastructure(this IServiceCollection services, 
         IList<Assembly> assemblies, IConfiguration configuration, IList<IModule> modules)
     {
-        var disabledModules = new List<string>();
-        foreach (var (key, value) in configuration.AsEnumerable())
-        {
-            if (!key.Contains(":module:enabled"))
-            {
-                continue;
-            }
-
-            if (!bool.Parse(value))
-            {
-                disabledModules.Add(key.Split(":")[0]);
-            }
-        }
-
         services
             .AddMemoryCache()
             .AddSingleton<IRequestStorage, RequestStorage>()
@@ -80,19 +66,7 @@ public static class Extensions
             .AddControllers()
             .ConfigureApplicationPartManager(mgr =>
             {
-                var removedParts = new List<ApplicationPart>();
-                foreach (var disabledModule in disabledModules)
-                {
-                    var parts = mgr.ApplicationParts
-                        .Where(x => x.Name.Contains(disabledModule, StringComparison.InvariantCultureIgnoreCase));
-                    removedParts.AddRange(parts);
-                }
-
-                foreach (var removedPart in removedParts)
-                {
-                    mgr.ApplicationParts.Remove(removedPart);
-                }
-                
+                mgr.RemoveDisabledModulesApplicationParts(configuration.GetDisabledModules());
                 mgr.FeatureProviders.Add(new InternalControllerFeatureProvider());
             });
         
@@ -104,8 +78,7 @@ public static class Extensions
     public static IServiceCollection AddInitializer<T>(this IServiceCollection services) where T : class, IInitializer
         => services.AddTransient<IInitializer, T>();
 
-    public static string GetModuleName(this object obj)
-        => obj?.GetType().GetModuleName() ?? string.Empty;
+    public static string GetModuleName(this object obj) => obj?.GetType().GetModuleName() ?? string.Empty;
 
     public static string GetModuleName(this Type type, string namespacePart = "Modules", int splitIndex = 2)
     {
@@ -135,6 +108,44 @@ public static class Extensions
         configuration.GetSection(section).Bind(options);
 
         return options;
+    }
+
+    private static IEnumerable<string> GetDisabledModules(this IConfiguration configuration)
+    {
+        var disabledModules = new List<string>();
+        foreach (var (key, value) in configuration.AsEnumerable())
+        {
+            if (!key.Contains(":module:enabled"))
+            {
+                continue;
+            }
+
+            if (!bool.Parse(value))
+            {
+                var moduleName = key.Split(":")[0]; // conferences:module:enabled - this is the key
+                disabledModules.Add(moduleName);
+            }
+        }
+
+        return disabledModules;
+    }
+
+    private static void RemoveDisabledModulesApplicationParts(this ApplicationPartManager manager, 
+        IEnumerable<string> disabledModules)
+    {
+        var removedAppParts = new List<ApplicationPart>();
+        foreach (var disabledModule in disabledModules)
+        {
+            var partsToRemove = manager.ApplicationParts
+                .Where(x => x.Name.Contains(disabledModule, StringComparison.InvariantCultureIgnoreCase));
+                    
+            removedAppParts.AddRange(partsToRemove);
+        }
+                
+        foreach (var removedAppPart in removedAppParts)
+        {
+            manager.ApplicationParts.Remove(removedAppPart);
+        }
     }
 
     public static IApplicationBuilder UseModularInfrastructure(this IApplicationBuilder app)

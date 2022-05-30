@@ -1,11 +1,13 @@
 using System.Threading;
 using System.Threading.Tasks;
+using Inflow.Modules.Payments.Core.Deposits.Domain.Entities;
 using Inflow.Modules.Payments.Core.Deposits.Domain.Repositories;
 using Inflow.Modules.Payments.Core.Deposits.Events;
 using Inflow.Modules.Payments.Core.Deposits.Exceptions;
 using Inflow.Modules.Payments.Infrastructure.Exceptions;
 using Inflow.Modules.Payments.Infrastructure.Repositories;
 using Inflow.Shared.Abstractions.Commands;
+using Inflow.Shared.Abstractions.Exceptions;
 using Inflow.Shared.Abstractions.Messaging;
 using Inflow.Shared.Abstractions.Time;
 using Microsoft.Extensions.Logging;
@@ -34,21 +36,18 @@ internal sealed class StartDepositCommandHandler : ICommandHandler<StartDeposit>
 
     public async Task HandleAsync(StartDeposit command, CancellationToken cancellationToken = default)
     {
-        var customer = await _customerRepository.GetAsync(command.CustomerId);
-        if (customer is null)
-        {
-            throw new CustomerNotFoundException(command.CustomerId);
-        }
+        var customer = await _customerRepository.GetAsync(command.CustomerId, cancellationToken);
 
         if (!customer.IsActive || !customer.IsVerified)
         {
             throw new CustomerNotActiveException(command.CustomerId);
         }
 
-        var account = await _depositAccountRepository.GetAsync(command.CustomerId, command.Currency);
+        var account = await _depositAccountRepository.GetAsync(command.CustomerId, command.Currency, cancellationToken);
         if (account is null)
         {
-            throw new DepositAccountNotFoundException(command.AccountId, command.CustomerId);
+            throw new ResourceNotFoundException(
+                $"Deposit Account for a Customer with ID: '{command.CustomerId}' was not found");
         }
 
         var deposit = account.CreateDeposit(command.DepositId, command.Amount, _clock.CurrentDate());

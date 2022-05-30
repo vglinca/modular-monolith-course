@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Inflow.Modules.Wallets.Core.Wallets.Exceptions;
 using Inflow.Modules.Wallets.Core.Wallets.Repositories;
 using Inflow.Shared.Abstractions.Events;
+using Inflow.Shared.Abstractions.Exceptions;
 using Inflow.Shared.Abstractions.Messaging;
 using Inflow.Shared.Abstractions.Time;
 using Microsoft.Extensions.Logging;
@@ -32,7 +33,8 @@ internal sealed class WithdrawalStartedEventHandler : IEventHandler<WithdrawalSt
         var wallet = await _walletRepository.GetAsync(@event.CustomerId, @event.Currency);
         if (wallet is null)
         {
-            throw new WalletNotFoundException(@event.CustomerId, @event.Currency);
+            throw new ResourceNotFoundException(
+                $"Wallet for customer with ID '{@event.CustomerId}' was not found");
         }
 
         try

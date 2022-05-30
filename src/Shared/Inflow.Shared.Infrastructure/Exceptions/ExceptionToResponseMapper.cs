@@ -15,6 +15,8 @@ internal sealed class ExceptionToResponseMapper : IExceptionToResponseMapper
         {
             ResourceNotFoundException e => new ExceptionResponse(
                 new ErrorsResponse(new Error(GetErrorCode(e), e.Message)), HttpStatusCode.NotFound),
+            BadRequestException e => new ExceptionResponse(new ErrorsResponse(new Error(GetErrorCode(e), e.Message)),
+                HttpStatusCode.BadRequest),
             InflowException e => new ExceptionResponse(new ErrorsResponse(new Error(GetErrorCode(e), e.Message)),
                 HttpStatusCode.BadRequest),
             _ => new ExceptionResponse(new ErrorsResponse(new Error("error", "There was an error")),

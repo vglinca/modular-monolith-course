@@ -7,6 +7,7 @@ using Inflow.Modules.Users.Core.Exceptions;
 using Inflow.Modules.Users.Core.Repositories;
 using Inflow.Shared.Abstractions;
 using Inflow.Shared.Abstractions.Commands;
+using Inflow.Shared.Abstractions.Exceptions;
 using Inflow.Shared.Abstractions.Messaging;
 using Inflow.Shared.Abstractions.Modules;
 using Inflow.Shared.Abstractions.Time;
@@ -66,7 +67,7 @@ internal sealed class SignUpHandler : ICommandHandler<SignUp>
         
         var roleName = string.IsNullOrWhiteSpace(command.Role) ? Role.Default : command.Role.ToLowerInvariant();
         var role = await _roleRepository.GetAsync(roleName)
-            .IfNullThen(() => new RoleNotFoundException(roleName));
+            .IfNullThen(() => new ResourceNotFoundException($"Role '{roleName}' was not found."));
         
         var now = _clock.CurrentDate();
         var password = _passwordHasher.HashPassword(default, command.Password);

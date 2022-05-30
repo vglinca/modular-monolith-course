@@ -6,6 +6,7 @@ using Inflow.Modules.Payments.Core.Withdrawals.Exceptions;
 using Inflow.Modules.Payments.Infrastructure.Exceptions;
 using Inflow.Modules.Payments.Infrastructure.Repositories;
 using Inflow.Shared.Abstractions.Commands;
+using Inflow.Shared.Abstractions.Exceptions;
 using Inflow.Shared.Abstractions.Messaging;
 using Inflow.Shared.Abstractions.Time;
 using Microsoft.Extensions.Logging;
@@ -35,11 +36,7 @@ internal sealed class StartWithdrawalCommandHandler : ICommandHandler<StartWithd
 
     public async Task HandleAsync(StartWithdrawal command, CancellationToken cancellationToken = default)
     {
-        var customer = await _customerRepository.GetAsync(command.CustomerId);
-        if (customer is null)
-        {
-            throw new CustomerNotFoundException(command.CustomerId);
-        }
+        var customer = await _customerRepository.GetAsync(command.CustomerId, cancellationToken);
 
         if (!customer.IsActive || !customer.IsVerified)
         {
@@ -49,7 +46,8 @@ internal sealed class StartWithdrawalCommandHandler : ICommandHandler<StartWithd
         var account = await _withdrawalAccountRepository.GetAsync(command.CustomerId, command.Currency);
         if (account is null)
         {
-            throw new WithdrawalAccountNotFoundException(command.AccountId, command.CustomerId);
+            throw new ResourceNotFoundException(
+                $"Withdrawal Account for the Customer with ID '{command.CustomerId}' was not found.");
         }
 
         var withdrawal = account.CreateWithdrawal(command.WithdrawalId, command.Amount, _clock.CurrentDate());

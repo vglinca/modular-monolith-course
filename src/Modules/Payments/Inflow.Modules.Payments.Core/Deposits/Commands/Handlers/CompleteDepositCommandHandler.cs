@@ -30,13 +30,10 @@ internal sealed class CompleteDepositCommandHandler : ICommandHandler<CompleteDe
 
     public async Task HandleAsync(CompleteDeposit command, CancellationToken cancellationToken = default)
     {
-        var deposit = await _depositRepository.GetAsync(command.DepositId);
-        if (deposit is null)
-        {
-            throw new DepositNotFoundException(command.DepositId);
-        }
+        var deposit = await _depositRepository.GetAsync(command.DepositId, cancellationToken);
+
+        _logger.LogInformation("Started processing a deposit with ID: '{DepositId}'...", command.DepositId);
         
-        _logger.LogInformation($"Started processing a deposit with ID: '{command.DepositId}'...");
         var (isCompleted, @event) = TryComplete(deposit, command.Secret);
         var now = _clock.CurrentDate();
         if (isCompleted)

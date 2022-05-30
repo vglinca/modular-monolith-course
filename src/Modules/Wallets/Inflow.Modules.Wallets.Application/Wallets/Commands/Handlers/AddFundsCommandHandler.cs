@@ -10,15 +10,15 @@ using Microsoft.Extensions.Logging;
 
 namespace Inflow.Modules.Wallets.Application.Wallets.Commands.Handlers;
 
-internal sealed class AddFundsCommandHAndler : ICommandHandler<AddFunds>
+internal sealed class AddFundsCommandHandler : ICommandHandler<AddFunds>
 {
     private readonly IWalletRepository _walletRepository;
     private readonly IMessageBroker _messageBroker;
     private readonly IClock _clock;
-    private readonly ILogger<AddFundsCommandHAndler> _logger;
+    private readonly ILogger<AddFundsCommandHandler> _logger;
 
-    public AddFundsCommandHAndler(IWalletRepository walletRepository, IMessageBroker messageBroker, IClock clock, 
-        ILogger<AddFundsCommandHAndler> logger)
+    public AddFundsCommandHandler(IWalletRepository walletRepository, IMessageBroker messageBroker, IClock clock, 
+        ILogger<AddFundsCommandHandler> logger)
     {
         _walletRepository = walletRepository;
         _messageBroker = messageBroker;
@@ -28,11 +28,7 @@ internal sealed class AddFundsCommandHAndler : ICommandHandler<AddFunds>
 
     public async Task HandleAsync(AddFunds command, CancellationToken cancellationToken = default)
     {
-        var wallet = await _walletRepository.GetAsync(command.WalletId);
-        if (wallet is null)
-        {
-            throw new WalletNotFoundException(command.WalletId);
-        }
+        var wallet = await _walletRepository.GetAsync(command.WalletId, cancellationToken);
 
         if (wallet.Currency != command.Currency)
         {

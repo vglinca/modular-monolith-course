@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Inflow.Modules.Customers.Core.Domain.Entities;
 using Inflow.Modules.Customers.Core.Domain.Repositories;
+using Inflow.Shared.Abstractions.Exceptions;
+using Inflow.Shared.Infrastructure.Postgres;
 using Microsoft.EntityFrameworkCore;
 
 namespace Inflow.Modules.Customers.Core.DAL.Repositories;
@@ -12,8 +15,9 @@ internal class CustomersRepository : ICustomerRepository
 
     public CustomersRepository(CustomersDbContext ctx) => _ctx = ctx;
 
-    public Task<Customer> GetAsync(Guid id)
-        => _ctx.Customers.SingleOrDefaultAsync(x => x.Id == id);
+    public Task<Customer> GetAsync(Guid id, CancellationToken cancellationToken = default)
+        => _ctx.Customers.GetOneOrThrowAsync(x => x.Id.Equals(id),
+            () => throw ResourceNotFoundException.OfType<Customer>(id), cancellationToken);
 
     public Task<bool> ExistsAsync(string name)
         => _ctx.Customers.AnyAsync(x => x.Name.Equals(name));

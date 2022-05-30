@@ -1,7 +1,10 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Inflow.Modules.Payments.Infrastructure.Entities;
 using Inflow.Modules.Payments.Infrastructure.Repositories;
+using Inflow.Shared.Abstractions.Exceptions;
+using Inflow.Shared.Infrastructure.Postgres;
 using Microsoft.EntityFrameworkCore;
 
 namespace Inflow.Modules.Payments.Core.DAL.Repositories;
@@ -9,11 +12,11 @@ namespace Inflow.Modules.Payments.Core.DAL.Repositories;
 internal class CustomerRepository : ICustomerRepository
 {
     private readonly PaymentsDbContext _ctx;
-
     public CustomerRepository(PaymentsDbContext ctx) => _ctx = ctx;
 
-    public Task<Customer> GetAsync(Guid id)
-        => _ctx.Customers.SingleOrDefaultAsync(x => x.Id == id);
+    public Task<Customer> GetAsync(Guid id, CancellationToken cancellationToken = default)
+        => _ctx.Customers.GetOneOrThrowAsync(x => x.Id.Equals(id),
+            () => throw ResourceNotFoundException.OfType<Customer>(id), cancellationToken);
 
     public async Task AddAsync(Customer customer)
     {

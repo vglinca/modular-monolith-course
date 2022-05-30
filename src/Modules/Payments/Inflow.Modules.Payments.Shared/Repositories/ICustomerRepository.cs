@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 using Inflow.Modules.Payments.Infrastructure.Entities;
 
@@ -8,7 +9,7 @@ namespace Inflow.Modules.Payments.Infrastructure.Repositories;
 
 internal interface ICustomerRepository
 {
-    Task<Customer> GetAsync(Guid id);
+    Task<Customer> GetAsync(Guid id, CancellationToken cancellationToken = default);
     Task AddAsync(Customer customer);
     Task UpdateAsync(Customer customer);
 }

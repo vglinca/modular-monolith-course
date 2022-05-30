@@ -2,7 +2,7 @@ using Inflow.Shared.Abstractions.Exceptions;
 
 namespace Inflow.Modules.Users.Core.Exceptions;
 
-internal class InvalidUserStateException : InflowException
+internal class InvalidUserStateException : BadRequestException
 {
     public string State { get; }
 

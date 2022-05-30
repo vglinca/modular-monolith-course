@@ -25,15 +25,12 @@ internal sealed class LockCustomerCommandHandler : ICommandHandler<LockCustomer>
 
     public async Task HandleAsync(LockCustomer command, CancellationToken cancellationToken = default)
     {
-        var customer = await _customerRepository.GetAsync(command.CustomerId);
-        if (customer is null)
-        {
-            throw new CustomerNotFoundException(command.CustomerId);
-        }
-        
+        var customer = await _customerRepository.GetAsync(command.CustomerId, cancellationToken);
+
         customer.Lock(command.Notes);
         await _customerRepository.UpdateAsync(customer);
         await _messageBroker.PublishAsync(new CustomerLocked(command.CustomerId), cancellationToken);
-        _logger.LogInformation($"Locked a customer with ID: '{command.CustomerId}'.");
+        
+        _logger.LogInformation("Locked a customer with ID: '{CustomerId}'.", command.CustomerId);
     }
 }

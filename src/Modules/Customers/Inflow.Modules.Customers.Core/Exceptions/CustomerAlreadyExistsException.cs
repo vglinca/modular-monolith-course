@@ -1,9 +1,9 @@
 using System;
 using Inflow.Shared.Abstractions.Exceptions;
 
-namespace Inflow.Modules.Users.Core.Exceptions;
+namespace Inflow.Modules.Customers.Core.Exceptions;
 
-internal class CustomerAlreadyExistsException : InflowException
+internal class CustomerAlreadyExistsException : BadRequestException
 {
     public Guid Id { get; }
 

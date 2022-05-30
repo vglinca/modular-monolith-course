@@ -2,11 +2,12 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Inflow.Modules.Customers.Core.Clients;
+using Inflow.Modules.Customers.Core.Clients.External.DTO;
 using Inflow.Modules.Customers.Core.Domain.Entities;
 using Inflow.Modules.Customers.Core.Domain.Repositories;
 using Inflow.Modules.Customers.Core.Exceptions;
-using Inflow.Modules.Users.Core.Exceptions;
 using Inflow.Shared.Abstractions.Commands;
+using Inflow.Shared.Abstractions.Exceptions;
 using Inflow.Shared.Abstractions.Kernel.ValueObjects;
 using Inflow.Shared.Abstractions.Time;
 using Microsoft.Extensions.Logging;
@@ -35,7 +36,7 @@ internal sealed class CreateCustomerCommandHandler : ICommandHandler<CreateCusto
         var user = await _userApiClient.GetAsync(command.Email, cancellationToken);
         if (user is null)
         {
-            throw new UserNotFoundException(command.Email);
+            throw ResourceNotFoundException.OfType<UserDto>(command.Email, nameof(command.Email));
         }
 
         if (user.Role is not "user")
@@ -45,7 +46,7 @@ internal sealed class CreateCustomerCommandHandler : ICommandHandler<CreateCusto
 
         var customerId = user.Id;
 
-        if (await _customerRepository.GetAsync(customerId) is not null)
+        if (await _customerRepository.GetAsync(customerId, cancellationToken) is not null)
         {
             throw new CustomerAlreadyExistsException(customerId);
         }
@@ -53,6 +54,6 @@ internal sealed class CreateCustomerCommandHandler : ICommandHandler<CreateCusto
         var customer = new Customer(customerId, command.Email, _clock.CurrentDate());
         await _customerRepository.AddAsync(customer);
         
-        _logger.LogInformation($"Created a customer with the id: {customer.Id}");
+        _logger.LogInformation("Created a customer with the id: {CustomerId}", customer.Id);
     }
 }

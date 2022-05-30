@@ -1,7 +1,10 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Inflow.Modules.Payments.Core.Deposits.Domain.Entities;
 using Inflow.Modules.Payments.Core.Deposits.Domain.Repositories;
+using Inflow.Shared.Abstractions.Exceptions;
+using Inflow.Shared.Infrastructure.Postgres;
 using Microsoft.EntityFrameworkCore;
 
 namespace Inflow.Modules.Payments.Core.DAL.Repositories;
@@ -12,10 +15,11 @@ internal class DepositRepository : IDepositRepository
 
     public DepositRepository(PaymentsDbContext ctx) => _ctx = ctx;
 
-    public Task<Deposit> GetAsync(Guid id)
+    public Task<Deposit> GetAsync(Guid id, CancellationToken cancellationToken = default)
         => _ctx.Deposits
             .Include(x => x.Account)
-            .SingleOrDefaultAsync(x => x.Id == id);
+            .GetOneOrThrowAsync(x => x.Id.Equals(id), 
+                () => throw ResourceNotFoundException.OfType<Deposit>(id), cancellationToken);
 
     public async Task AddAsync(Deposit deposit)
     {

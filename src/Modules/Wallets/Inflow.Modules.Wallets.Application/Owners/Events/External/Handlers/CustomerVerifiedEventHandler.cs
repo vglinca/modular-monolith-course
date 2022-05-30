@@ -25,11 +25,6 @@ internal sealed class CustomerVerifiedEventHandler : IEventHandler<CustomerVerif
     public async Task HandleAsync(CustomerVerified @event, CancellationToken cancellationToken = default)
     {
         var owner = await _ownerRepository.GetAsync(@event.CustomerId);
-        if (owner is null)
-        {
-            throw new OwnerNotFoundException(@event.CustomerId);
-        }
-        
         owner.Verify(_clock.CurrentDate());
         await _ownerRepository.UpdateAsync(owner);
         

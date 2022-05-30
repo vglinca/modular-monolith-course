@@ -3,7 +3,7 @@ using Inflow.Shared.Abstractions.Exceptions;
 
 namespace Inflow.Modules.Users.Core.Exceptions;
 
-internal class UserStateCannotBeChangedException : InflowException
+internal class UserStateCannotBeChangedException : BadRequestException
 {
     public string State { get; }
     public Guid UserId { get; }

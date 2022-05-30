@@ -1,9 +1,12 @@
+using System.Threading;
 using System.Threading.Tasks;
 using Inflow.Modules.Wallets.Core.Owners.Types;
 using Inflow.Modules.Wallets.Core.Wallets.Entities;
 using Inflow.Modules.Wallets.Core.Wallets.Repositories;
 using Inflow.Modules.Wallets.Core.Wallets.Types;
+using Inflow.Shared.Abstractions.Exceptions;
 using Inflow.Shared.Abstractions.Kernel.ValueObjects;
+using Inflow.Shared.Infrastructure.Postgres;
 using Microsoft.EntityFrameworkCore;
 
 namespace Inflow.Modules.Wallets.Infrastructure.EF.Repositories;
@@ -14,10 +17,11 @@ internal class WalletRepository : IWalletRepository
 
     public WalletRepository(WalletsDbContext ctx) => _ctx = ctx;
 
-    public Task<Wallet> GetAsync(WalletId id)
+    public Task<Wallet> GetAsync(WalletId id, CancellationToken cancellationToken = default)
         => _ctx.Wallets
             .Include(x => x.Transfers)
-            .SingleOrDefaultAsync(x => x.Id == id);
+            .GetOneOrThrowAsync(x => x.Id.Equals(id),
+                () => throw ResourceNotFoundException.OfType<Wallet>(id), cancellationToken);
 
     public Task<Wallet> GetAsync(OwnerId ownerId, Currency currency)
         => _ctx.Wallets

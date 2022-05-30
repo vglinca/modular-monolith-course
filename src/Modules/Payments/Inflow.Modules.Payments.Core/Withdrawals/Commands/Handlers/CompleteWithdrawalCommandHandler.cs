@@ -31,10 +31,6 @@ internal sealed class CompleteWithdrawalCommandHandler : ICommandHandler<Complet
     public async Task HandleAsync(CompleteWithdrawal command, CancellationToken cancellationToken = default)
     {
         var withdrawal = await _withdrawalRepository.GetAsync(command.WithdrawalId);
-        if (withdrawal is null)
-        {
-            throw new WithdrawalNotFoundException(command.WithdrawalId);
-        }
 
         _logger.LogInformation($"Started processing a withdrawal with ID: '{command.WithdrawalId}'...");
         var (isCompleted, @event) = TryComplete(withdrawal, command.Secret);

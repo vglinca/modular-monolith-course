@@ -3,7 +3,7 @@ using Inflow.Shared.Abstractions.Exceptions;
 
 namespace Inflow.Modules.Payments.Infrastructure.Exceptions;
 
-public class CustomerNotActiveException : InflowException
+public class CustomerNotActiveException : BadRequestException
 {
     public Guid CustomerId { get; }
 

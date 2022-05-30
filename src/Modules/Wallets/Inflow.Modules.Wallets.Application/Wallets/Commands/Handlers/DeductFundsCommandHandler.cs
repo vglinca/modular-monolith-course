@@ -28,11 +28,7 @@ internal sealed class DeductFundsCommandHandler : ICommandHandler<DeductFunds>
 
     public async Task HandleAsync(DeductFunds command, CancellationToken cancellationToken = default)
     {
-        var wallet = await _walletRepository.GetAsync(command.WalletId);
-        if (wallet is null)
-        {
-            throw new WalletNotFoundException(command.WalletId);
-        }
+        var wallet = await _walletRepository.GetAsync(command.WalletId, cancellationToken);
 
         if (wallet.Currency != command.Currency)
         {

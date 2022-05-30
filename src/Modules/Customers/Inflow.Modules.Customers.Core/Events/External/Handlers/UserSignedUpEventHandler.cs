@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Inflow.Modules.Customers.Core.Domain.Entities;
 using Inflow.Modules.Customers.Core.Domain.Repositories;
-using Inflow.Modules.Users.Core.Exceptions;
+using Inflow.Modules.Customers.Core.Exceptions;
 using Inflow.Shared.Abstractions.Events;
 using Inflow.Shared.Abstractions.Messaging;
 using Inflow.Shared.Abstractions.Time;

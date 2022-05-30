@@ -7,6 +7,7 @@ using Inflow.Modules.Users.Core.Exceptions;
 using Inflow.Modules.Users.Core.Repositories;
 using Inflow.Shared.Abstractions;
 using Inflow.Shared.Abstractions.Commands;
+using Inflow.Shared.Abstractions.Exceptions;
 using Inflow.Shared.Abstractions.Messaging;
 using Microsoft.Extensions.Logging;
 
@@ -34,7 +35,7 @@ internal sealed class UpdateUserStateHandler : ICommandHandler<UpdateUserState>
         }
 
         var user = await _repository.GetAsync(command.UserId)
-            .IfNullThen(() => new UserNotFoundException(command.UserId));
+            .IfNullThen(() => ResourceNotFoundException.OfType<User>(command.UserId));
 
         var previousState = user.State;
         if (previousState == state)

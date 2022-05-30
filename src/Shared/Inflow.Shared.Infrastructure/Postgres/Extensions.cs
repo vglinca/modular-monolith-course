@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Inflow.Shared.Abstractions.Queries;
@@ -87,5 +88,19 @@ public static class Extensions
         };
 
         return await data.Skip((page - 1) * results).Take(results).ToListAsync(cancellationToken);
+    }
+
+    public static async Task<T> GetOneOrThrowAsync<T>(this IQueryable<T> source,
+        Expression<Func<T, bool>> predicate, Action exception,
+        CancellationToken cancellationToken = default)
+    {
+        var result = await source.FirstOrDefaultAsync(predicate, cancellationToken);
+
+        if (result is null)
+        {
+            exception.Invoke();
+        }
+
+        return result;
     }
 }

@@ -33,23 +33,15 @@ internal sealed class TransferFundsCommandHandler : ICommandHandler<TransferFund
     {
         var amount = new Amount(command.Amount);
         
-        var ownerWallet = await _walletRepository.GetAsync(command.OwnerWalletId);
-        if (ownerWallet is null || ownerWallet.OwnerId != command.OwnerId)
-        {
-            throw new WalletNotFoundException(command.OwnerWalletId);
-        }
-        
+        var ownerWallet = await _walletRepository.GetAsync(command.OwnerWalletId, cancellationToken);
+
         if (ownerWallet.Currency != command.Currency)
         {
             throw new InvalidTransferCurrencyException(command.Currency);
         }
 
-        var receiverWallet = await _walletRepository.GetAsync(command.ReceiverWalletId);
-        if (receiverWallet is null)
-        {
-            throw new WalletNotFoundException(command.ReceiverWalletId);
-        }
-        
+        var receiverWallet = await _walletRepository.GetAsync(command.ReceiverWalletId, cancellationToken);
+
         if (receiverWallet.Currency != command.Currency)
         {
             throw new InvalidTransferCurrencyException(command.Currency);
