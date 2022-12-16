@@ -2,7 +2,7 @@
 
 ## About
 
-**Inflow** is the sample **virtual payments** app that has been created during the **[DevMentors]([https://devmentors.io](https://devmentors.io/me/courses/modular-monolith)** course. The app is built as a **[Modular Monolith](https://modularmonolith.net)**, written in **[.NET 6.0](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)**. Each module is an independent **vertical slice** with its custom architecture, and the overall integration between the modules is mostly based on the **event-driven** architecture to achieve **greater autonomy** between the modules.
+**Inflow** is the sample **virtual payments** app that has been created during the **[DevMentors]([https://devmentors.io](https://devmentors.io/me/courses/modular-monolith))** course. The app is built as a **[Modular Monolith](https://modularmonolith.net)**, written in **[.NET 6.0](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)**. Each module is an independent **vertical slice** with its custom architecture, and the overall integration between the modules is mostly based on the **event-driven** architecture to achieve **greater autonomy** between the modules.
 
 ## Starting the application
 
